@@ -4,23 +4,24 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Country;
+use App\Models\State;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\CountryResource\Pages;
+use App\Filament\Resources\StateResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\CountryResource\RelationManagers;
-use App\Filament\Resources\CountryResource\RelationManagers\EmployeesRelationManager;
-use App\Filament\Resources\CountryResource\RelationManagers\StatesRelationManager;
-use Filament\Tables\Columns\TextColumn;
+use App\Filament\Resources\StateResource\RelationManagers;
+use App\Filament\Resources\StateResource\RelationManagers\CitiesRelationManager;
+use App\Filament\Resources\StateResource\RelationManagers\EmployeesRelationManager;
 
-class CountryResource extends Resource
+class StateResource extends Resource
 {
-    protected static ?string $model = Country::class;
+    protected static ?string $model = State::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -30,12 +31,9 @@ class CountryResource extends Resource
             ->schema([
                 Card::make()
                     ->schema([
-                        TextInput::make('country_code')
-                            ->required()
-                            ->maxLength(3),
-                        TextInput::make('name')
-                            ->required()
-                            ->maxLength(255)
+                        Select::make('country_id',)
+                            ->relationship('country', 'name')->required(),
+                        TextInput::make('name')->required()->maxLength(255)
                     ])
             ]);
     }
@@ -45,9 +43,9 @@ class CountryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->sortable(),
-                TextColumn::make('country_code')->sortable()->searchable(),
                 TextColumn::make('name')->sortable()->searchable(),
-                TextColumn::make('created_at')->dateTime(),
+                TextColumn::make('country.name')->sortable(),
+                TextColumn::make('created_at')->dateTime()
             ])
             ->filters([
                 //
@@ -66,16 +64,16 @@ class CountryResource extends Resource
     {
         return [
             // EmployeesRelationManager::class,
-            // StatesRelationManager::class,
+            // CitiesRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCountries::route('/'),
-            'create' => Pages\CreateCountry::route('/create'),
-            'edit' => Pages\EditCountry::route('/{record}/edit'),
+            'index' => Pages\ListStates::route('/'),
+            'create' => Pages\CreateState::route('/create'),
+            'edit' => Pages\EditState::route('/{record}/edit'),
         ];
     }
 }
